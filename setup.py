@@ -20,6 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'driver = ackmn_to_rc_MG996R_PCA9685:main',
+            'publisher = ackmn_publisher:main',
         ],
     },
 )

@@ -7,7 +7,10 @@
   <maintainer email="strngch@gmail.com">satoru-n</maintainer>
   <license>TODO: License declaration</license>
 
-  <buildtool_depend>ament_python</buildtool_depend>
+  <!-- <buildtool_depend>ament_python</buildtool_depend> -->
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>my_ackermann_interfaces</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
