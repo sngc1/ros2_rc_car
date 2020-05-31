@@ -11,16 +11,30 @@ class AckermannPublisher(Node):
         self.publisher_ = self.create_publisher(AckermannDrive, 'ackermann_drive', 10)
         timer_period = 2.0  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
+        
+        self.lr = 'L'
+        self.speed = 'STOP'
 
     def timer_callback(self):
         msg = AckermannDrive()
+        
+        if self.speed == 'STOP':
+            msg.speed = 0.2
+            self.speed = 'RUN'
+        else:
+            msg.speed = 0.0
+            self.speed = 'STOP'
 
-        msg.speed = 3.0
-        msg.steering_angle = 0.0
+        if self.lr == 'L':
+            msg.steering_angle = 1.0
+            self.lr = 'R'
+        else: 
+            msg.steering_angle = -1.0
+            self.lr = 'L'
 
         self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: %s' % msg.speed)
-
+        self.get_logger().info('Publishing: speed=%s, steer=%s' % (msg.speed, msg.steering_angle))
+        self.get_logger().info('spd=%s' % self.speed)
 
 def main(args=None):
     rclpy.init(args=args)

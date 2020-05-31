@@ -16,15 +16,14 @@ DRIVE_MIN = 250
 DRIVE_MAX = 500
 DRIVE_RANGE = DRIVE_MAX - DRIVE_MIN
 DRIVE_NEUTRAL = DRIVE_RANGE // 2 + DRIVE_MIN
-
+SPEED_LIMIT = 0.2  
 
 class AckermannSubscriber(Node):
 
-    def __init__(self):
+    def __init__(self, pwm):
         super().__init__('ackman_subscriber')
 
-        self.pwm = Adafruit_PCA9685.PCA9685()  # default i2c address: 0x40
-        self.pwm.set_pwm_freq(60)  # Hz
+        self.pwm = pwm
 
         self.subscription = self.create_subscription(
             AckermannDrive,
@@ -36,37 +35,37 @@ class AckermannSubscriber(Node):
     def listener_callback(self, msg):
         self.get_logger().info('Received: speed=%s' % msg.speed)
 
-        drive_pwm, steer_pwm = to_pwm(msg.speed, msg.steering_angle)
+        drive_pwm, steer_pwm = self.to_pwm(msg.speed, msg.steering_angle)
 
         self.pwm.set_pwm(CHANNEL_DRIVE, 0, drive_pwm)
         self.pwm.set_pwm(CHANNEL_STEER, 0, steer_pwm)
 
     def to_pwm(self, drive, steer):
-        self.get_logger().info('drive=', drive, 'steer=', steer)
+        self.get_logger().info('drive=%s, steer=%s' % (drive, steer))
 
-        if drive > 0.1:
-            drive = 0.1
+        # crump for debug
+        if drive > SPEED_LIMIT:
+            drive = SPEED_LIMIT
 
         steer_pwm = STEER_NEUTRAL - int(steer * STEER_RANGE)//2
         drive_pwm = DRIVE_NEUTRAL + int(drive * DRIVE_RANGE)//2
  
         return drive_pwm, steer_pwm
 
-    def reset_pwm(self):
-        self.pwm.set_pwm(CHANNEL_DRIVE, 0, DRIVE_NEUTRAL)
-
 
 def main(args=None):
-    rclpy.init(args=args)
+    try:
+        rclpy.init(args=args)
+        pwm = Adafruit_PCA9685.PCA9685()  # default i2c address: 0x40
+        pwm.set_pwm_freq(60)  # Hz
+        ackman_subscriber = AckermannSubscriber(pwm)
 
-    ackman_subscriber = AckermannSubscriber()
+        rclpy.spin(ackman_subscriber)
 
-    rclpy.spin(ackman_subscriber)
-    
-    ackman_subscriber.reset_pwm()
-    
-    ackman_subscriber.destroy_node()
-    rclpy.shutdown()
+    finally:
+        pwm.set_pwm(CHANNEL_DRIVE, 0, DRIVE_NEUTRAL)
+        ackman_subscriber.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
