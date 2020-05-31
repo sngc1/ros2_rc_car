@@ -1,8 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
-#from std_msgs.msg import String
-from my_ackermann_interfaces.msg import AckermannDrive
+from ackermann_msgs.msg import AckermannDrive
 import Adafruit_PCA9685
 
 

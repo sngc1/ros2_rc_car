@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
-from my_ackermann_interfaces.msg import AckermannDrive
+from ackermann_msgs.msg import AckermannDrive
 
 
 class AckermannPublisher(Node):
