@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'driver = ros2_rc_car.ackmn_to_rc_MG996R_PCA9685:main',
             'publisher = ros2_rc_car.ackmn_publisher:main',
+            'joy_ackmn = ros2_rc_car.joy_to_ackmn:main',
         ],
     },
 )
