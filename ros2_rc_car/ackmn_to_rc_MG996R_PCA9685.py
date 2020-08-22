@@ -54,12 +54,11 @@ class AckermannSubscriber(Node):
 
 
 def main(args=None):
+    rclpy.init(args=args)
+    pwm = Adafruit_PCA9685.PCA9685()  # default i2c address: 0x40
+    pwm.set_pwm_freq(60)  # Hz
+    ackman_subscriber = AckermannSubscriber(pwm)
     try:
-        rclpy.init(args=args)
-        pwm = Adafruit_PCA9685.PCA9685()  # default i2c address: 0x40
-        pwm.set_pwm_freq(60)  # Hz
-        ackman_subscriber = AckermannSubscriber(pwm)
-
         rclpy.spin(ackman_subscriber)
 
     finally:
